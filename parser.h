@@ -53,7 +53,9 @@ struct parser_section_t {
 	void                   *data;
 };
 
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 parser_context* parser_start(FILE *fd);
 void parser_add_section(parser_context *context, parser_section *section);
@@ -64,6 +66,10 @@ void parser_error(parser_context *context, const char *fmt, ...)
 #endif
 ;
 void parser_stop(parser_context *context);
+
+#ifdef __cplusplus
+}
+#endif
 
 /* vim:set tabstop=4 softtabstop=4 shiftwidth=4: */
 /* vim:set foldmethod=marker foldlevel=32 foldmarker={,}: */

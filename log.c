@@ -22,6 +22,19 @@
 #include <event.h>
 #include "utils.h"
 #include "log.h"
+#include <android/log.h>
+
+
+#define TAG "Magisk:redsocks"
+#define LOGUN(...) __android_log_print(ANDROID_LOG_UNKNOWN, TAG, __VA_ARGS__)
+#define LOGDE(...) __android_log_print(ANDROID_LOG_DEFAULT, TAG, __VA_ARGS__)
+#define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, TAG, __VA_ARGS__)
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
+#define LOGW(...) __android_log_print(ANDROID_LOG_WARN, TAG, __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
+#define LOGF(...) __android_log_print(ANDROID_LOG_FATAL, TAG, __VA_ARGS__)
+#define LOGS(...) __android_log_print(ANDROID_LOG_SILENT, TAG, __VA_ARGS__)
 
 const char *error_lowmem = "<Can't print error, not enough memory>";
 
@@ -60,7 +73,47 @@ static void fprint_timestamp(
 
 static void stderr_msg(const char *file, int line, const char *func, int priority, const char *message, const char *appendix)
 {
-	fprint_timestamp(stderr, file, line, func, priority, message, appendix);
+	switch (priority) {
+		case LOG_EMERG:
+		case LOG_ALERT:
+		case LOG_CRIT:
+		case LOG_ERR:{
+			if (appendix)
+		        LOGE("%s:%d %s(...) %s: %s", file, line, func, message, appendix);
+	        else
+		        LOGE("%s:%d %s(...) %s", file, line, func, message);
+			break;
+		}
+		case LOG_WARNING:{
+			if (appendix)
+		        LOGW("%s:%d %s(...) %s: %s", file, line, func, message, appendix);
+	        else
+		        LOGW("%s:%d %s(...) %s", file, line, func, message);
+			break;
+		}
+		case LOG_NOTICE:
+		case LOG_INFO:{
+			if (appendix)
+		        LOGI("%s:%d %s(...) %s: %s", file, line, func, message, appendix);
+	        else
+		        LOGI("%s:%d %s(...) %s", file, line, func, message);
+			break;
+		}
+		case LOG_DEBUG:{
+			if (appendix)
+		        LOGD("%s:%d %s(...) %s: %s", file, line, func, message, appendix);
+	        else
+		        LOGD("%s:%d %s(...) %s", file, line, func, message);
+			break;
+		}
+		default:{
+			if (appendix)
+		        LOGV("%s:%d %s(...) %s: %s", file, line, func, message, appendix);
+	        else
+		        LOGV("%s:%d %s(...) %s", file, line, func, message);
+			break;
+		}
+	}
 }
 
 static FILE *logfile = NULL;
